@@ -25,7 +25,7 @@ const db = mysql.createConnection({
 // Test Database Connection
 db.connect(err => {
     if (!err) {
-        console.log("Successfully connect to mysql");
+        console.log("Successfully connected to mysql");
     } else {
         console.log("Failed to connect to mysql");
     }
@@ -60,7 +60,33 @@ app.get('/ViewPatient', (req, res) => {
 
 
 app.get('/', (req, res) => {
-    res.send('hello world')
+    const select = "SELECT * FROM Patients";
+    db.query(select, (err, result) => {
+        res.send(result)
+    });
+});
+// app.get('/', (req, res) => {
+//     res.send('hello world')
+// });
+
+
+
+// post user input values to insert a new person into the database
+app.post("/AddPatient", (req, res) => {
+
+    const firstName = req.body.FirstName;
+    const middleName = req.body.MiddleName;
+    const lastName = req.body.LastName;
+    const DOB = req.body.DOB;
+    const sex = req.body.Sex;
+    const activeStatus = req.body.ActiveStatus;
+    const race = req.body.Race;
+    const ethnicity = req.body.Ethnicity;
+
+    const insert = "INSERT INTO patients (FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus VALUES (?,?,?,?,?,?,?,?)"
+    db.query(insert, [firstName, middleName, lastName, DOB, sex, activeStatus, race, ethnicity], (err, result) => {
+        console.log(result);
+    });
 });
 
 
