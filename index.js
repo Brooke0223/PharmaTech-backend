@@ -2,13 +2,16 @@
 // Utilized and adapted code from this tutorial video, credit to PedroTech
 
 
+
 /* SETUP */
+
 
 // Express
 const express = require('express');
 const app = express();
-PORT = 64265;
+PORT = 44265;
 
+// Dependencies
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -41,16 +44,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
+
 /* ROUTES */
 
-// get bsg_people data from the database for table display
-// app.get('/', (req, res) => {
-//     const select = "SELECT * FROM Patients";
-//     db.query(select, (err, result) => {
-//         res.send(result)
-//     });
-// });
-
+//GET all patients in database
 app.get('/ViewPatient', (req, res) => {
     const select = "SELECT * FROM Patients";
     db.query(select, (err, result) => {
@@ -58,20 +55,53 @@ app.get('/ViewPatient', (req, res) => {
     });
 });
 
-
 app.get('/', (req, res) => {
     const select = "SELECT * FROM Patients";
     db.query(select, (err, result) => {
         res.send(result)
     });
 });
-// app.get('/', (req, res) => {
-//     res.send('hello world')
-// });
+
+
+//GET a specific patient in database
+app.get('/FindPatient/:id', (req, res) => {
+    const { id } = req.params
+
+    const sql = `SELECT * FROM Patients WHERE PatientID = '${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+        res.send(result)
+    });
+});
 
 
 
-// post user input values to insert a new person into the database
+//modify (PUT) a patient in the database
+app.put('/EditPatient/:id', (req, res) => {
+    const { id } = req.params
+
+    const firstName = req.body.FirstName;
+    const middleName = req.body.MiddleName;
+    const lastName = req.body.LastName;
+    const DOB = req.body.DOB;
+    const sex = req.body.Sex;
+    const activeStatus = req.body.ActiveStatus;
+    const race = req.body.Race;
+    const ethnicity = req.body.Ethnicity;
+
+
+    const sql = `UPDATE Patients SET FirstName='${firstName}', MiddleName='${middleName}', LastName='${lastName}', DOB='${DOB}', Sex='${sex}', ActiveStatus='${activeStatus}', Race='${race}', Ethnicity='${ethnicity}' WHERE PatientID='${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+        res.send(result)
+    });
+});
+
+
+
+// ADD new patient to the database
 app.post("/AddPatient", (req, res) => {
 
     const firstName = req.body.FirstName;
@@ -83,45 +113,25 @@ app.post("/AddPatient", (req, res) => {
     const race = req.body.Race;
     const ethnicity = req.body.Ethnicity;
 
-    const insert = "INSERT INTO patients (FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus VALUES (?,?,?,?,?,?,?,?)"
-    db.query(insert, [firstName, middleName, lastName, DOB, sex, activeStatus, race, ethnicity], (err, result) => {
+    const sql = `INSERT INTO Patients (FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus) VALUES ('${firstName}', '${middleName}', '${lastName}', '${DOB}', '${sex}', '${activeStatus}', '${race}', '${ethnicity}')`
+    db.query(sql, (err, result) => {
         console.log(result);
+        console.log(err);
     });
 });
 
 
-/* ROUTES */
-// app.get('/', function(req, res)
-//     {
-//         // Define our queries
-//         query1 = 'DROP TABLE IF EXISTS diagnostic;';
-//         query2 = 'CREATE TABLE diagnostic(id INT PRIMARY KEY AUTO_INCREMENT, text VARCHAR(255) NOT NULL);';
-//         query3 = 'INSERT INTO diagnostic (text) VALUES ("MySQL is working!")';
-//         query4 = 'SELECT * FROM diagnostic;';
+// DELETE patient from database
+app.delete("/DeletePatient/:id", (req, res) => {
 
-//         // Execute every query in an asynchronous manner, we want each query to finish before the next one starts
+    const { id } = req.params
 
-//         // DROP TABLE...
-//         db.pool.query(query1, function (err, results, fields){
-
-//             // CREATE TABLE...
-//             db.pool.query(query2, function(err, results, fields){
-
-//                 // INSERT INTO...
-//                 db.pool.query(query3, function(err, results, fields){
-
-//                     // SELECT *...
-//                     db.pool.query(query4, function(err, results, fields){
-
-//                         // Send the results to the browser
-//                         let base = "<h1>MySQL Results:</h1>"
-//                         res.send(base + JSON.stringify(results));
-//                     });
-//                 });
-//             });
-//         });
-//     });
-
+    const sql = `DELETE FROM Patients WHERE PatientID = '${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+    });
+});
 
 
 
