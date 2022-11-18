@@ -120,10 +120,10 @@ app.post('/SearchPatient', (req, res) => {
         AND MiddleName = IFNULL(middleName, '') = IFNULL('${middleName}', IFNULL(MiddleName, ''))
         AND LastName = IFNULL('${lastName}', LastName)
         AND DOB = IFNULL('${DOB}', DOB)
-        AND AddressStreet = IFNULL(addressStreet, '') = IFNULL('${addressStreet}', IFNULL(AddressStreet, ''))
-        AND AddressCity = IFNULL(addressCity, '') = IFNULL('${addressCity}', IFNULL(AddressCity, ''))
-        AND AddressState = IFNULL(addressState, '') = IFNULL('${addressState}', IFNULL(AddressState, ''))
-        AND AddressZip = IFNULL(addressZip, '') = IFNULL('${addressZip}', IFNULL(AddressZip, ''))
+        AND AddressStreet = IFNULL(address, '') = IFNULL('${address}', IFNULL(AddressStreet, ''))
+        AND AddressCity = IFNULL(city, '') = IFNULL('${city}', IFNULL(AddressCity, ''))
+        AND AddressState = IFNULL(state, '') = IFNULL('${state}', IFNULL(AddressState, ''))
+        AND AddressZip = IFNULL(zip, '') = IFNULL('${zip}', IFNULL(AddressZip, ''))
         AND Email = IFNULL(email, '') = IFNULL('${email}', IFNULL(Email, ''))
         )`
 
