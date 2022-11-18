@@ -112,19 +112,19 @@ app.post('/SearchPatient', (req, res) => {
     // const email = (req.body.Email !== '') ? req.body.Email : null;
 
 
-    const sql = `SELECT * FROM Patients 
+    const sql = `SELECT PatientID, FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus FROM Patients 
         JOIN Contact_Methods ON Patients.PatientID = Contact_Methods.PatientID
         WHERE (
-        Patients.PatientID = IFNULL(${ (patientID !== '') ? patientID : null}, Patients.PatientID) 
-        AND FirstName = IFNULL(${ (firstName !== '') ? firstName : null}, FirstName)
-        AND MiddleName = IFNULL(${ (middleName !== '') ? middleName : null}, MiddleName)
-        AND LastName = IFNULL(${ (lastName !== '') ? lastName : null}, LastName)
-        AND DOB = IFNULL(${ (DOB !== '') ? DOB : null}, DOB)
-        AND AddressStreet = IFNULL(${ (address !== '') ? address : null}, AddressStreet)
-        AND AddressCity = IFNULL(${ (city !== '') ? city : null}, AddressCity)
-        AND AddressState = IFNULL(${ (state !== '') ? state : null}, AddressState)
-        AND AddressZip = IFNULL(${ (zip !== '') ? zip : null}, AddressZip)
-        AND Email = IFNULL(${ (email !== '') ? email : null}, Email)
+        Patients.PatientID = IFNULL('${patientID}', Patients.PatientID) 
+        AND FirstName = IFNULL('${firstName}', FirstName)
+        AND MiddleName = IFNULL(middleName, '') = IFNULL('${middleName}', IFNULL(MiddleName, ''))
+        AND LastName = IFNULL('${lastName}', LastName)
+        AND DOB = IFNULL('${DOB}', DOB)
+        AND AddressStreet = IFNULL(addressStreet, '') = IFNULL('${addressStreet}', IFNULL(AddressStreet, ''))
+        AND AddressCity = IFNULL(addressCity, '') = IFNULL('${addressCity}', IFNULL(AdressCity, ''))
+        AND AddressState = IFNULL(addressState, '') = IFNULL('${addressState}', IFNULL(AddressState, ''))
+        AND AddressZip = IFNULL(addressZip, '') = IFNULL('${addressZip}', IFNULL(AddressZip, ''))
+        AND Email = IFNULL(email, '') = IFNULL('${email}', IFNULL(Email, ''))
         )`
 
         console.log(sql)
