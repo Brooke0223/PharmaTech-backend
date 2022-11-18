@@ -63,7 +63,27 @@ app.get('/', (req, res) => {
 });
 
 
-//GET a specific patient in database
+//GET all contacts in database
+app.get('/ViewContact', (req, res) => {
+    const sql = "SELECT * FROM Contact_Methods";
+    db.query(sql, (err, result) => {
+        res.send(result)
+    });
+});
+
+//GET all facilities in database
+app.get('/ViewFacility', (req, res) => {
+    const sql = "SELECT * FROM Facilities";
+    db.query(sql, (err, result) => {
+        res.send(result)
+    });
+});
+
+
+
+
+
+//GET a specific patient in database matching patientID in the query parameter
 app.get('/FindPatient/:id', (req, res) => {
     const { id } = req.params
 
@@ -76,8 +96,119 @@ app.get('/FindPatient/:id', (req, res) => {
 });
 
 
+//GET specific patient(s) in database matching req parameters
+app.post('/SearchPatient', (req, res) => {
+    
+    const patientID = req.body.PatientID;
+    const firstName = req.body.FirstName;
+    const middleName = req.body.MiddleName;
+    const lastName = req.body.LastName;
+    const DOB = req.body.DOB;
+    const address = req.body.Address;
+    const city = req.body.City;
+    const state = req.body.State;
+    const zip = req.body.Zip;
+    const email = req.body.Email;
+    // const email = (req.body.Email !== '') ? req.body.Email : null;
 
-//modify (PUT) a patient in the database
+
+    const sql = `SELECT * FROM Patients 
+        JOIN Contact_Methods ON Patients.PatientID = Contact_Methods.PatientID
+        WHERE (
+        Patients.PatientID = IFNULL(${ (patientID !== '') ? patientID : null}, Patients.PatientID) 
+        AND FirstName = IFNULL(${ (firstName !== '') ? firstName : null}, FirstName)
+        AND MiddleName = IFNULL(${ (middleName !== '') ? middleName : null}, MiddleName)
+        AND LastName = IFNULL(${ (lastName !== '') ? lastName : null}, LastName)
+        AND DOB = IFNULL(${ (DOB !== '') ? DOB : null}, DOB)
+        AND AddressStreet = IFNULL(${ (address !== '') ? address : null}, AddressStreet)
+        AND AddressCity = IFNULL(${ (city !== '') ? city : null}, AddressCity)
+        AND AddressState = IFNULL(${ (state !== '') ? state : null}, AddressState)
+        AND AddressZip = IFNULL(${ (zip !== '') ? zip : null}, AddressZip)
+        AND Email = IFNULL(${ (email !== '') ? email : null}, Email)
+        )`
+
+        console.log(sql)
+    // db.query(sql, (err, result) => {
+    //     console.log(result);
+    //     console.log(err);
+    //     res.send(result)
+    // });
+});
+
+
+//GET a specific contact in database
+app.get('/FindContact/:id', (req, res) => {
+    const { id } = req.params
+
+    const sql = `SELECT * FROM Contact_Methods WHERE ContactID = '${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+        res.send(result)
+    });
+});
+
+
+//GET a specific facility in database
+app.get('/FindFacility/:id', (req, res) => {
+    const { id } = req.params
+
+    const sql = `SELECT * FROM Facilities WHERE FacilityID = '${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+        res.send(result)
+    });
+});
+
+
+
+
+// DELETE patient from database
+app.delete("/DeletePatient/:id", (req, res) => {
+
+    const { id } = req.params
+
+    const sql = `DELETE FROM Patients WHERE PatientID = '${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+    });
+});
+
+// DELETE contact from database
+app.delete("/DeleteContact/:id", (req, res) => {
+
+    const { id } = req.params
+
+    const sql = `DELETE FROM Contact_Methods WHERE ContactID = '${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+    });
+});
+
+
+// DELETE facility from database
+app.delete("/DeleteFacility/:id", (req, res) => {
+
+    const { id } = req.params
+
+    const sql = `DELETE FROM Facilities WHERE FacilityID = '${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+        if(err){
+            res.sendStatus(500)
+        }
+    });
+});
+
+
+
+
+
+//modify (PUT) an existing patient in the database
 app.put('/EditPatient/:id', (req, res) => {
     const { id } = req.params
 
@@ -98,6 +229,51 @@ app.put('/EditPatient/:id', (req, res) => {
         res.send(result)
     });
 });
+
+//modify (PUT) an existing contact in the database
+app.put('/EditContact/:id', (req, res) => {
+    const { id } = req.params
+
+    const address = req.body.Address;
+    const city = req.body.City;
+    const state = req.body.State;
+    const zip = req.body.Zip;
+    const phone = req.body.Phone;
+    const phoneType = req.body.PhoneType;
+    const email = req.body.Email;
+    const emailOpt = req.body.EmailOpt;
+    const phoneOpt = req.body.PhoneOpt;
+    const mailOpt = req.body.MailOpt;
+
+    const sql = `UPDATE Contact_Methods SET Phone='${phone}', PhoneType='${phoneType}', PhoneOpt='${phoneOpt}', Email='${email}', EmailOpt='${emailOpt}', AddressStreet='${address}', AddressCity='${city}', AddressState='${state}', AddressZip='${zip}', MailOpt='${mailOpt}' WHERE ContactID='${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+        res.send(result)
+    });
+});
+
+
+//modify (PUT) an existing facility in the database
+app.put('/EditFacility/:id', (req, res) => {
+    const { id } = req.params
+
+    const name = req.body.Name;
+    const type = req.body.Type;
+    const address = req.body.Address;
+    const city = req.body.City;
+    const state = req.body.State;
+    const zip = req.body.Zip;
+
+    const sql = `UPDATE Facilities SET FacilityName='${name}', FacilityType='${type}', AddressStreet='${address}', AddressCity='${city}', AddressState='${state}', AddressZip='${zip}' WHERE FacilityID='${id}'`
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+        res.send(result)
+    });
+});
+
+
 
 
 
@@ -121,17 +297,48 @@ app.post("/AddPatient", (req, res) => {
 });
 
 
-// DELETE patient from database
-app.delete("/DeletePatient/:id", (req, res) => {
+// ADD new contact to the database
+app.post("/AddContact", (req, res) => {
 
-    const { id } = req.params
+    const patientID = req.body.PatientID;
+    const address = req.body.Address;
+    const city = req.body.City;
+    const state = req.body.State;
+    const zip = req.body.Zip;
+    const phone = req.body.Phone;
+    const phoneType = req.body.PhoneType;
+    const email = req.body.Email;
+    const emailOpt = req.body.EmailOpt;
+    const phoneOpt = req.body.PhoneOpt;
+    const mailOpt = req.body.MailOpt;
 
-    const sql = `DELETE FROM Patients WHERE PatientID = '${id}'`
+    const sql = `INSERT INTO Contact_Methods (PatientID, Phone, PhoneType, PhoneOpt, Email, EmailOpt, AddressStreet, AddressCity, AddressState, AddressZip, MailOpt) VALUES ('${patientID}', '${phone}', '${phoneType}', '${phoneOpt}', '${email}', '${emailOpt}', '${address}', '${city}', '${state}', '${zip}', '${mailOpt}')`
+    console.log(sql)
     db.query(sql, (err, result) => {
         console.log(result);
         console.log(err);
     });
 });
+
+
+// ADD new facility to the database
+app.post("/AddFacility", (req, res) => {
+
+    const name = req.body.Name;
+    const type = req.body.Type;
+    const address = req.body.Address;
+    const city = req.body.City;
+    const state = req.body.State;
+    const zip = req.body.Zip;
+
+    const sql = `INSERT INTO Facilities (FacilityName, FacilityType, AddressStreet, AddressCity, AddressState, AddressZip) VALUES ('${name}', '${type}', '${address}', '${city}', '${state}', '${zip}')`
+    console.log(sql)
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+    });
+});
+
 
 
 
