@@ -127,12 +127,12 @@ app.post('/SearchPatient', (req, res) => {
         AND Email = IFNULL(email, '') = IFNULL('${email}', IFNULL(Email, ''))
         )`
 
-    //    console.log(sql)
-    db.query(sql, (err, result) => {
-         console.log(result);
-         console.log(err);
-         res.send(result)
-    });
+        console.log(sql)
+    // db.query(sql, (err, result) => {
+    //     console.log(result);
+    //     console.log(err);
+    //     res.send(result)
+    // });
 });
 
 
