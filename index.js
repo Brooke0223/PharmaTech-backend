@@ -49,14 +49,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //GET all patients in database
 app.get('/ViewPatient', (req, res) => {
-    const select = "SELECT * FROM Patients";
+    const select = "SELECT PatientID AS 'Patient ID', FirstName AS 'First Name', MiddleName AS 'Middle Name', LastName AS 'Last Name', DOB, Sex, Race, Ethnicity, ActiveStatus AS 'Active Status' FROM Patients";
     db.query(select, (err, result) => {
         res.send(result)
     });
 });
 
 app.get('/', (req, res) => {
-    const select = "SELECT * FROM Patients";
+    const select = "SELECT PatientID AS 'Patient ID', FirstName AS 'First Name', MiddleName AS 'Middle Name', LastName AS 'Last Name', DOB, Sex, Race, Ethnicity, ActiveStatus AS 'Active Status' FROM Patients";
     db.query(select, (err, result) => {
         res.send(result)
     });
