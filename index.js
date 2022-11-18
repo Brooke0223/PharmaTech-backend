@@ -289,7 +289,7 @@ app.post("/AddPatient", (req, res) => {
     const race = req.body.Race;
     const ethnicity = req.body.Ethnicity;
 
-    const sql = `INSERT INTO Patients (FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus) VALUES ('${firstName}', '${middleName}', '${lastName}', '${DOB}', '${sex}', '${activeStatus}', '${race}', '${ethnicity}')`
+    const sql = `INSERT INTO Patients (FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus) VALUES ('${firstName}', '${middleName}', '${lastName}', '${DOB}', '${sex}', '${race}', '${ethnicity}', '${activeStatus}')`
     db.query(sql, (err, result) => {
         console.log(result);
         console.log(err);
