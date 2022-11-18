@@ -112,7 +112,7 @@ app.post('/SearchPatient', (req, res) => {
     // const email = (req.body.Email !== '') ? req.body.Email : null;
 
 
-    const sql = `SELECT PatientID, FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus FROM Patients 
+    const sql = `SELECT Patients.PatientID, FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus FROM Patients 
         JOIN Contact_Methods ON Patients.PatientID = Contact_Methods.PatientID
         WHERE (
         Patients.PatientID = IFNULL('${patientID}', Patients.PatientID) 
@@ -121,7 +121,7 @@ app.post('/SearchPatient', (req, res) => {
         AND LastName = IFNULL('${lastName}', LastName)
         AND DOB = IFNULL('${DOB}', DOB)
         AND AddressStreet = IFNULL(addressStreet, '') = IFNULL('${addressStreet}', IFNULL(AddressStreet, ''))
-        AND AddressCity = IFNULL(addressCity, '') = IFNULL('${addressCity}', IFNULL(AdressCity, ''))
+        AND AddressCity = IFNULL(addressCity, '') = IFNULL('${addressCity}', IFNULL(AddressCity, ''))
         AND AddressState = IFNULL(addressState, '') = IFNULL('${addressState}', IFNULL(AddressState, ''))
         AND AddressZip = IFNULL(addressZip, '') = IFNULL('${addressZip}', IFNULL(AddressZip, ''))
         AND Email = IFNULL(email, '') = IFNULL('${email}', IFNULL(Email, ''))
