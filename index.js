@@ -117,14 +117,14 @@ app.post('/SearchPatient', (req, res) => {
         WHERE (
         Patients.PatientID = IFNULL('${patientID}', Patients.PatientID) 
         AND FirstName = IFNULL('${firstName}', FirstName)
-        AND MiddleName = IFNULL(middleName, '') = IFNULL('${middleName}', IFNULL(MiddleName, ''))
+        AND IFNULL(MiddleName, '') = IFNULL('${middleName}', IFNULL(MiddleName, ''))
         AND LastName = IFNULL('${lastName}', LastName)
         AND DOB = IFNULL('${DOB}', DOB)
-        AND AddressStreet = IFNULL(address, '') = IFNULL('${address}', IFNULL(AddressStreet, ''))
-        AND AddressCity = IFNULL(city, '') = IFNULL('${city}', IFNULL(AddressCity, ''))
-        AND AddressState = IFNULL(state, '') = IFNULL('${state}', IFNULL(AddressState, ''))
-        AND AddressZip = IFNULL(zip, '') = IFNULL('${zip}', IFNULL(AddressZip, ''))
-        AND Email = IFNULL(email, '') = IFNULL('${email}', IFNULL(Email, ''))
+        AND IFNULL(AddressStreet, '') = IFNULL('${address}', IFNULL(AddressStreet, ''))
+        AND IFNULL(AddressCity, '') = IFNULL('${city}', IFNULL(AddressCity, ''))
+        AND IFNULL(AddressState, '') = IFNULL('${state}', IFNULL(AddressState, ''))
+        AND IFNULL(AddressZip, '') = IFNULL('${zip}', IFNULL(AddressZip, ''))
+        AND IFNULL(Email, '') = IFNULL('${email}', IFNULL(Email, ''))
         )`
 
         console.log(sql)
