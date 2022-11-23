@@ -49,14 +49,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //GET all patients in database
 app.get('/ViewPatient', (req, res) => {
-    const select = "SELECT PatientID AS 'Patient ID', FirstName AS 'First Name', MiddleName AS 'Middle Name', LastName AS 'Last Name', DOB, Sex, Race, Ethnicity, ActiveStatus AS 'Active Status' FROM Patients";
+    const select = "SELECT PatientID, FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus FROM Patients";
     db.query(select, (err, result) => {
         res.send(result)
     });
 });
 
 app.get('/', (req, res) => {
-    const select = "SELECT PatientID AS 'Patient ID', FirstName AS 'First Name', MiddleName AS 'Middle Name', LastName AS 'Last Name', DOB, Sex, Race, Ethnicity, ActiveStatus AS 'Active Status' FROM Patients";
+    const select = "SELECT PatientID, FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus FROM Patients";
     db.query(select, (err, result) => {
         res.send(result)
     });
@@ -96,7 +96,8 @@ app.get('/FindPatient/:id', (req, res) => {
 });
 
 
-//GET specific patient(s) in database matching req parameters
+
+//GET specific patient(s) in database
 app.post('/SearchPatient', (req, res) => {
     
     const patientID = req.body.PatientID;
@@ -104,36 +105,144 @@ app.post('/SearchPatient', (req, res) => {
     const middleName = req.body.MiddleName;
     const lastName = req.body.LastName;
     const DOB = req.body.DOB;
+
     const address = req.body.Address;
     const city = req.body.City;
     const state = req.body.State;
     const zip = req.body.Zip;
     const email = req.body.Email;
+    const phone = req.body.Phone;
     // const email = (req.body.Email !== '') ? req.body.Email : null;
 
 
-    const sql = `SELECT * FROM Patients 
-        JOIN Contact_Methods ON Patients.PatientID = Contact_Methods.PatientID
+    //Define SUBQUERY (i.e. search any Patient parameters that are being passed, ignoring empty values)
+    const subquery = 
+        `(SELECT Patients.PatientID, FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus, AddressStreet, AddressCity, AddressState, AddressZip, Phone, Email
+        FROM Patients 
+        LEFT JOIN Contact_Methods ON Patients.PatientID = Contact_Methods.PatientID
         WHERE (
-        Patients.PatientID = IFNULL(${ (patientID !== '') ? patientID : null}, Patients.PatientID) 
-        AND FirstName = IFNULL(${ (firstName !== '') ? firstName : null}, FirstName)
-        AND MiddleName = IFNULL(${ (middleName !== '') ? middleName : null}, MiddleName)
-        AND LastName = IFNULL(${ (lastName !== '') ? lastName : null}, LastName)
-        AND DOB = IFNULL(${ (DOB !== '') ? DOB : null}, DOB)
-        AND AddressStreet = IFNULL(${ (address !== '') ? address : null}, AddressStreet)
-        AND AddressCity = IFNULL(${ (city !== '') ? city : null}, AddressCity)
-        AND AddressState = IFNULL(${ (state !== '') ? state : null}, AddressState)
-        AND AddressZip = IFNULL(${ (zip !== '') ? zip : null}, AddressZip)
-        AND Email = IFNULL(${ (email !== '') ? email : null}, Email)
-        )`
+            Patients.PatientID = IFNULL(${ (patientID !== '') ? `'${patientID}'` : null}, Patients.PatientID) 
+            AND FirstName = IFNULL(${ (firstName !== '') ? `'${firstName}'` : null}, FirstName)
+            AND MiddleName = IFNULL(${ (middleName !== '') ? `'${middleName}'` : null}, MiddleName)
+            AND LastName = IFNULL(${ (lastName !== '') ? `'${lastName}'` : null}, LastName)
+            AND DOB = IFNULL(${ (DOB !== '') ? `'${DOB}'` : null}, DOB)
+        )) subquery`
+    
+    
 
-        console.log(sql)
-    // db.query(sql, (err, result) => {
-    //     console.log(result);
-    //     console.log(err);
-    //     res.send(result)
-    // });
+    //Define WHERE clauses (i.e. search any Contact_Methods parameters that are being passed, ignoring empty values)
+    var listOfWhereClauses = []
+
+    if(address !== ''){
+        listOfWhereClauses.push(`AND AddressStreet='${address}'`)
+    }
+    if(city !== ''){
+        listOfWhereClauses.push(`AND AddressCity='${city}'`)
+    }
+    if(state !== ''){
+        listOfWhereClauses.push(`AND AddressState='${state}'`)
+    }
+    if(zip !== ''){
+        listOfWhereClauses.push(`AND AddressZip='${zip}'`)
+    }
+    if(email !== ''){
+        listOfWhereClauses.push(`AND Email='${email}'`)
+    }
+    if(phone !== ''){
+        listOfWhereClauses.push(`AND Phone='${phone}'`)
+    }
+    
+    //Only the first "WHERE" clause should be preceeded by 'AND' keyword
+    if(listOfWhereClauses.length >0){
+    listOfWhereClauses[0] = listOfWhereClauses[0].replace('AND ','')
+    }
+
+    //Convert listofWhereClauses to string
+    const whereClause = listOfWhereClauses.length > 0 ? `WHERE (${listOfWhereClauses.join(' ')})` : ''
+        
+
+    const sql = `Select DISTINCT PatientID, FirstName, MiddleName, LastName, DOB, Sex, Race, Ethnicity, ActiveStatus
+                FROM ${subquery}
+                ${whereClause}`
+
+    
+    db.query(sql, (err, result) => {
+        console.log(result);
+        console.log(err);
+        res.send(result)
+    });
 });
+
+
+
+//GET specific facilities in database
+app.post('/SearchFacility', (req, res) => {
+    const facilityName = req.body.FacilityName;
+    const facilityType = req.body.FacilityType;
+    const city = req.body.City;
+    const state = req.body.State;
+    const providerFirstName = req.body.ProviderFirstName;
+    const providerLastName = req.body.ProviderLastName;
+    const productType = req.body.ProductType;
+    const productNDC = req.body.NDC;
+
+    const subquery = 
+    `(SELECT Facilities.FacilityID, FacilityName, FacilityType, AddressStreet, AddressCity, AddressState, AddressZip, Products.ProductType, Products.NDC
+        FROM Facilities
+        LEFT JOIN Products_Facilities ON Facilities.FacilityID = Products_Facilities.FacilityID
+        LEFT JOIN Products ON Products_Facilities.ProductID = Products.ProductID
+    )subquery`
+
+
+    //Define WHERE clauses (i.e. search any parameters that are being passed, ignoring empty values)
+    var listOfWhereClauses = []
+
+    if(facilityName !== ''){
+        listOfWhereClauses.push(`AND subquery.FacilityName ='${facilityName}'`)
+    }
+    if(facilityType !== ''){
+        listOfWhereClauses.push(`AND subquery.FacilityType ='${facilityType}'`)
+    }
+    if(city !== ''){
+        listOfWhereClauses.push(`AND subquery.AddressCity ='${city}'`)
+    }
+    if(state !== ''){
+        listOfWhereClauses.push(`AND subquery.AddressState ='${state}'`)
+    }
+    if(providerFirstName !== ''){
+        listOfWhereClauses.push(`AND Providers.FirstName ='${providerFirstName}'`)
+    }
+    if(providerLastName !== ''){
+        listOfWhereClauses.push(`AND Providers.LastName ='${providerLastName}'`)
+    }
+    if(productType !== ''){
+        listOfWhereClauses.push(`AND subquery.ProductType ='${productType}'`)
+    }
+    if(productNDC !== ''){
+        listOfWhereClauses.push(`AND subquery.NDC ='${productNDC}'`)
+    }
+
+    //Only the first "WHERE" clause should be preceeded by 'AND' keyword
+    if(listOfWhereClauses.length >0){
+        listOfWhereClauses[0] = listOfWhereClauses[0].replace('AND ','')
+        }
+    
+    //Convert listofWhereClauses to string
+    const whereClause = listOfWhereClauses.length > 0 ? `WHERE (${listOfWhereClauses.join(' ')})` : ''
+
+    const sql = `SELECT DISTINCT subquery.FacilityID, FacilityName, FacilityType, AddressStreet, AddressCity, AddressState, AddressZip
+    FROM ${subquery}
+    LEFT JOIN Providers_Facilities ON subquery.FacilityID = Providers_Facilities.FacilityID
+    LEFT JOIN Providers ON Providers_Facilities.ProviderID = Providers.ProviderID
+    ${whereClause}`
+
+    
+    db.query(sql, (err, result) => {
+    console.log(result);
+    console.log(err);
+    res.send(result)
+    });
+})
 
 
 //GET a specific contact in database
