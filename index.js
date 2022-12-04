@@ -441,55 +441,29 @@ app.post('/SearchEvent', (req, res) => {
     const city = req.body.FacilityCity;
     const state = req.body.FacilityState;
     const zip = req.body.FacilityZip;
+    console.log(req.body);
  
-    //Define SUBQUERY (i.e. search any Patient parameters that are being passed, ignoring empty values)
-    const subquery = 
-        `(SELECT Events.EventID, Events.PatientID, EventType, EventDate, SubmissionDate, ProductID, AdministrationSite, AdministrationRoute, ProviderID, Events.FacilityID, Notes
-        FROM Events
-        LEFT JOIN Patients on Events.PatientID = Patients.PatientID
+    const sql = `
+    SELECT EventID, Events.PatientID, EventType, EventDate, SubmissionDate, ProductID, AdministrationSite, AdministrationRoute, ProviderID, Events.FacilityID, Notes FROM Events 
+    JOIN Patients ON Events.PatientID = Patients.PatientID
+    WHERE (
+        FirstName = IFNULL(${ (firstName !== '') ? `'${firstName}'` : null}, FirstName)
+        AND LastName = IFNULL(${ (lastName !== '') ? `'${lastName}'` : null}, LastName)
+        AND DOB = IFNULL(${ (DOB !== '') ? `'${DOB}'` : null}, DOB)
+        AND IFNULL(MiddleName, '') = IFNULL(${ (middleName !== '') ? `'${middleName}'` : null}, IFNULL(MiddleName, ''))
+        AND Patients.PatientID = IFNULL(${ (patientID !== '') ? `'${patientID}'` : null}, Patients.PatientID)
+        AND ActiveStatus = IFNULL(${ (status !== '') ? `'${status}'` : null}, ActiveStatus)
+    ) 
+    AND Events.EventID IN (
+        SELECT Events.EventID FROM Events
+        LEFT JOIN Facilities ON Events.FacilityID = Facilities.FacilityID 
         WHERE (
-            FirstName = IFNULL(${ (firstName !== '') ? `'${firstName}'` : null}, FirstName)
-            AND MiddleName = IFNULL(${ (middleName !== '') ? `'${middleName}'` : null}, MiddleName)
-            AND LastName = IFNULL(${ (lastName !== '') ? `'${lastName}'` : null}, LastName)
-            AND DOB = IFNULL(${ (DOB !== '') ? `'${DOB}'` : null}, DOB)
-            AND Events.PatientID = IFNULL(${ (patientID !== '') ? `'${patientID}'` : null}, Events.PatientID)
-            AND Patients.ActiveStatus = IFNULL(${ (status !== '') ? `'${status}'` : null}, Patients.ActiveStatus)
-        )) subquery`
-    
-    const subquery2 = 
-        `(SELECT Events.EventID FROM Events
-        LEFT JOIN Facilities ON Events.FacilityID = Facilities.FacilityID
-        ) subquery`
-
-    //Define WHERE clauses (i.e. search any Facility parameters that are being passed, ignoring empty values)
-    var listOfWhereClauses = []
-
-    if(facilityName !== ''){
-        listOfWhereClauses.push(`AND FacilityName='${facilityName}'`)
-    }
-    if(city !== ''){
-        listOfWhereClauses.push(`AND AddressCity='${city}'`)
-    }
-    if(state !== ''){
-        listOfWhereClauses.push(`AND AddressState='${state}'`)
-    }
-    if(zip !== ''){
-        listOfWhereClauses.push(`AND AddressZip='${zip}'`)
-    }
-    
-    
-    //Only the first "WHERE" clause should be preceeded by 'AND' keyword
-    if(listOfWhereClauses.length >0){
-    listOfWhereClauses[0] = listOfWhereClauses[0].replace('AND ','')
-    }
-
-    //Convert listofWhereClauses to string
-    const whereClause = listOfWhereClauses.length > 0 ? `WHERE (${listOfWhereClauses.join(' ')})` : ''
-        
-
-    const sql = `Select DISTINCT subquery.EventID, PatientID, EventType, EventDate, SubmissionDate, ProductID, AdministrationSite, AdministrationRoute, ProviderID, FacilityID, Notes
-                FROM ${subquery} AND Events.EventID IN ${subquery2}
-                ${whereClause})`
+            FacilityName = IFNULL(${ (facilityName !== '') ? `'${facilityName}'` : null}, FacilityName)
+            AND AddressCity = IFNULL(${ (city !== '') ? `'${city}'` : null}, AddressCity)
+            AND AddressState = IFNULL(${ (state !== '') ? `'${state}'` : null}, AddressState)
+            AND AddressZip = IFNULL(${ (zip !== '') ? `'${zip}'` : null}, AddressZip)            
+        )
+    )`
     
     console.log("myquery",sql);
 
