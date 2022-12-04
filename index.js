@@ -134,7 +134,8 @@ app.get('/ViewProductFacility', (req, res) => {
 
 //GET all events in database
 app.get('/ViewEvent', (req, res) => {
-    const sql = "SELECT EventID, PatientID, EventType, EventDate, SubmissionDate, ProductID, AdministrationSite, AdministrationRoute, ProviderID, FacilityID, Notes FROM Events";
+    const sql = `SELECT EventID, PatientID, EventType, EventDate, SubmissionDate, ProductID, AdministrationSite, AdministrationRoute, ProviderID, FacilityID, Notes 
+    FROM Events`;
     db.query(sql, (err, result) => {
         res.send(result)
     });
@@ -577,6 +578,12 @@ app.delete("/DeletePatient/:id", (req, res) => {
     db.query(sql, (err, result) => {
         console.log(result);
         console.log(err);
+        if (err){
+            res.status(500).send(err);
+        }
+        else{
+            res.send(result);
+        }       
     });
 });
 
@@ -602,9 +609,12 @@ app.delete("/DeleteFacility/:id", (req, res) => {
     db.query(sql, (err, result) => {
         console.log(result);
         console.log(err);
-        if(err){
-            res.sendStatus(500)
+        if (err){
+            res.status(500).send(err);
         }
+        else{
+            res.send(result);
+        }       
     });
 });
 
@@ -618,6 +628,12 @@ app.delete("/DeleteProvider/:id", (req, res) => {
     db.query(sql, (err, result) => {
         console.log(result);
         console.log(err);
+        if (err){
+            res.status(500).send(err);
+        }
+        else{
+            res.send(result);
+        }       
     });
 });
 
@@ -643,6 +659,12 @@ app.delete("/DeleteProduct/:id", (req, res) => {
     db.query(sql, (err, result) => {
         console.log(result);
         console.log(err);
+        if (err){
+            res.status(500).send(err);
+        }
+        else{
+            res.send(result);
+        }       
     });
 });
 
