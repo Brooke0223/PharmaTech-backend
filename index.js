@@ -1,5 +1,13 @@
-// Reference: https://www.youtube.com/watch?v=T8mqZZ0r-RA
-// Utilized and adapted code from this tutorial video, credit to PedroTech
+// Citation #1 for server code:
+// Date: 11/08/2022
+// Adapted from:
+// Source URL: https://canvas.oregonstate.edu/courses/1890458/assignments/8930021?module_item_id=22339292
+
+// Citation #2 for server code:
+// Date: 11/09/2022
+// Adapted from:
+// Source URL: https://github.com/abkamand/cs340-react-test-app-v2/blob/master/Back-End/index.js
+// Credit to Andrew Bassam Kamand
 
 
 
