@@ -994,7 +994,7 @@ app.post("/AddEvent", (req, res) => {
     const notes = req.body.Notes;
 
     const sql = `INSERT INTO Events (PatientID, EventType, EventDate, SubmissionDate, ProductID, AdministrationSite, AdministrationRoute, ProviderID, FacilityID, Notes) 
-    VALUES ('${patientID}', '${eventType}', '${eventDate}', '${submissionDate}', '${productID}', '${administrationSite}', '${administrationRoute}', '${providerID}', '${facilityID}', '${notes}')`
+    VALUES ('${patientID}', '${eventType}', '${eventDate}', '${submissionDate}', '${productID}', '${administrationSite}', '${administrationRoute}', ${ (providerID !== '') ? `'${providerID}'` : null},  ${ (facilityID !== '') ? `'${facilityID}'` : null}, '${notes}')`
     console.log(sql)
     db.query(sql, (err, result) => {
         console.log(result);
