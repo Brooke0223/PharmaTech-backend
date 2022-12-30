@@ -26,12 +26,19 @@ const cors = require('cors');
 
 
 // Database Connection
+// const db = mysql.createConnection({
+//     host: 'classmysql.engr.oregonstate.edu',
+//     user: 'cs340_ryanbro',
+//     password: '7442',
+//     database: 'cs340_ryanbro',
+// });
 const db = mysql.createConnection({
-    host: 'classmysql.engr.oregonstate.edu',
-    user: 'cs340_ryanbro',
-    password: '7442',
-    database: 'cs340_ryanbro',
+    host: 'sql9.freesqldatabase.com',
+    user: 'sql9587275',
+    password: 'LTR9j9UjLt',
+    database: 'sql9587275',
 });
+
 
 // Test Database Connection
 db.connect(err => {
