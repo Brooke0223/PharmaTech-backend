@@ -32,12 +32,22 @@ const cors = require('cors');
 //     password: '7442',
 //     database: 'cs340_ryanbro',
 // });
+
+// const db = mysql.createConnection({
+//     host: 'sql9.freesqldatabase.com',
+//     user: 'sql9587275',
+//     password: 'LTR9j9UjLt',
+//     database: 'sql9587275',
+// });
+
 const db = mysql.createConnection({
-    host: 'sql9.freesqldatabase.com',
-    user: 'sql9587275',
-    password: 'LTR9j9UjLt',
-    database: 'sql9587275',
+    host: 'db4free.net',
+    port: 3306,
+    user: 'brooke0223',
+    password: 'uRd4_LzZKCX!Sdp',
+    database: 'sql5535',
 });
+
 
 
 // Test Database Connection
